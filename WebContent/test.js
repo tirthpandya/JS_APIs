@@ -92,13 +92,33 @@ var Session = (function(){
 		this.setTimeoutRedirectPage=function(redirectPage){
 			this.timeoutRedirectPage = redirectPage;
 		};
+		this.trackUserActivity = function(){
+			var timer;
+			window.onload = resetTimer;
+		    window.onmousemove = resetTimer;
+		    window.onmousedown = resetTimer; 
+		    window.onclick = resetTimer;     
+		    window.onscroll = resetTimer;    
+		    window.onkeypress = resetTimer;
+		    function logout() {
+		    	//alert("timeout caused");
+		        window.location.href = this.timeoutRedirectPage;
+		    };
+
+		    function resetTimer() {
+		        clearTimeout(timer);
+		        timer = setTimeout(logout, sessionTimeout);  // time is in milliseconds
+		    };
+		};
 	}
 	var instance;
 	return {
 		createSession : function(){
 			if(instance == null){
-				alert("creating new session instance")
+				alert("creating new session instance");
+								
 				instance = new Session();
+				instance.trackUserActivity();
 				instance.constructor = null;
 			}
 			alert("returning session instance");
@@ -148,13 +168,13 @@ function createType() {
 			}	
 		};
 		script.innerHTML += "}" ; //End of the main persistent data type creation
-		//Begin of QueryClass for the persisten data type
+		//Begin of QueryClass for the persistent data type
 		script.innerHTML += "\nfunction "+typename.value+"Query(){"
 		script.innerHTML += "this.get"+typename.value+"By"+primaryKeyName+" =  function(value){";
 		script.innerHTML += "\n //implement code to  talk to Django here \n";
 		script.innerHTML += "alert('query function called');}"
 		script.innerHTML += "}" ; 
-		//End of QueryClass for the persisten data type
+		//End of QueryClass for the persistent data type
 		alert(script.innerHTML)
 		document.head.appendChild(script);
 	}
